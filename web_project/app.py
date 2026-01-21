@@ -13,9 +13,10 @@
 - 나중에 질문 기능, 관리자 기능 확장 가능
 """
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 import os
 
 # Flask 애플리케이션 객체 생성
@@ -63,8 +64,30 @@ class User(db.Model):
     password_hash = db.Column(db.String(200), nullable=False)
 
 # --------------------------------------------------
+# 로그인 여부 확인
+# --------------------------------------------------
+
+def login_required(func):
+    """
+    로그인 여부를 확인하는 데코레이터
+
+    목적:
+    - 로그인하지 않은 사용자의 페이지 접근 차단
+    - 로그인 페이지로 자동 이동
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+        return func(*args, **kwargs)
+
+    return wrapper
+
+# --------------------------------------------------
 # 회원가입 페이지
 # --------------------------------------------------
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -121,6 +144,7 @@ def login():
     POST:
     - 입력된 아이디와 비밀번호 확인
     - DB에 저장된 정보와 비교
+    - 로그인 성공 시 세션에 사용자 정보 저장
     """
 
     if request.method == "POST":
@@ -132,12 +156,69 @@ def login():
 
         # 사용자가 존재하고 비밀번호가 일치하는 경우
         if user and check_password_hash(user.password_hash, password):
-            return "로그인 성공"
+            # 로그인 상태를 유지하기 위해 세션에 사용자 정보 저장
+            session["user_id"] = user.id
+            session["username"] = user.username
 
-        # 로그인 실패
+            # 로그인 성공 후 메인 페이지로 이동
+            return redirect(url_for("home"))
+
+        # 로그인 실패 시 다시 로그인 페이지로 이동
         return "아이디 또는 비밀번호가 틀렸습니다."
 
     return render_template("login.html")
+
+# --------------------------------------------------
+# 메인 페이지 (로그인 필수)
+# --------------------------------------------------
+
+@app.route("/", methods=["GET", "POST"])
+@login_required
+def home():
+    """
+    로그인한 사용자만 접근 가능한 메인 페이지
+
+    GET:
+    - 질문 입력 화면 표시
+
+    POST:
+    - 질문 제출 처리
+    """
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        problem = request.form.get("problem", "").strip()
+
+        if not name:
+            name = "익명"
+
+        # 현재는 DB 저장 대신 출력만
+        print("질문 도착")
+        print("이름:", name)
+        print("문제 번호:", problem)
+        print("작성자:", session.get("username"))
+        print("-" * 30)
+
+        return render_template("index.html", success=True)
+
+    return render_template("index.html", success=False)
+
+# --------------------------------------------------
+# 로그아웃
+# --------------------------------------------------
+
+@app.route("/logout")
+def logout():
+    """
+    로그아웃 처리
+
+    목적:
+    - 세션 정보 삭제
+    - 로그인 상태 해제
+    """
+
+    session.clear()
+    return redirect(url_for("login"))
 
 # --------------------------------------------------
 # 서버 실행
