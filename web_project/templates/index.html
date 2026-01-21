@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>모르는 문제 질문</title>
+    <style>
+        body {
+            background: #f2f2f2;
+            font-family: Arial;
+            padding: 40px;
+        }
+        .box {
+            background: white;
+            max-width: 400px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        button {
+            background: black;
+            color: white;
+            border: none;
+        }
+        .success {
+            margin-top: 10px;
+            color: green;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>📘 모르는 문제 질문</h2>
+
+    <form method="post">
+        <input type="text" name="name" placeholder="이름 (선택)">
+        <input type="text" name="problem" placeholder="모르는 문제 번호" required>
+        <button type="submit">질문 보내기</button>
+    </form>
+
+    {% if success %}
+        <div class="success">질문이 전송되었습니다!</div>
+    {% endif %}
+</div>
+
+</body>
+</html>
