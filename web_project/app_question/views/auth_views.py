@@ -29,6 +29,8 @@ def login():
             session["user_id"] = user.user_id
             session["login_id"] = user.login_id
             session["user_name"] = user.user_name
+            session["role"] = user.role
+            session["auth_level"] = user.auth_level
             return redirect(url_for("main.home"))
 
         return "아이디 또는 비밀번호가 올바르지 않습니다."

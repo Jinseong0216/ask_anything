@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}관리자 대시보드{% endblock %}
+
+{% block content %}
+<h2>관리자 대시보드</h2>
+test
+<ul>
+    <li><a href="{{ url_for('admin.user_list') }}">회원 관리</a></li>
+</ul>
+{% endblock %}

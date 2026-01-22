@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>회원 목록</h2>
+
+<table border="1">
+<tr>
+    <th>ID</th>
+    <th>이름</th>
+    <th>학생/선생</th>
+    <th>권한</th>
+</tr>
+
+{% for user in users %}
+<tr>
+    <td>{{ user.login_id }}</td>
+    <td>{{ user.user_name }}</td>
+    <td>
+        {% if user.role == 'student' %}학생{% elif user.role == 'teacher' %}선생{% else %}unknown{% endif %}
+    </td>
+    <td>
+        {% if user.auth_level == 'general' %}일반{% elif user.auth_level == 'admin' %}관리자{% else %}unknown{% endif %}
+    </td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

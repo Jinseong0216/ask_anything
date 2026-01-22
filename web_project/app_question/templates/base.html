@@ -9,9 +9,16 @@
     <!-- 상단 공통 영역 -->
     {% if session.user_name %}
         <div>
-            {{ session.user_name }} 님 |
+            {{ session.user_name }} 님 | {{ session.role }} | {{ session.auth_level }}
             <a href="{{ url_for('auth.logout') }}">로그아웃</a>
             <a href="{{ url_for('main.mypage') }}">마이페이지</a>
+        </div>
+        <hr>
+    {% endif %}
+
+    {% if session.auth_level == 'admin' %}
+        <div>
+            <a href="{{ url_for('admin.dashboard') }}">관리자 대시보드</a>
         </div>
         <hr>
     {% endif %}
