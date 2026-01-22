@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>마이페이지</h3>
+
+<ul>
+    <li>아이디: {{ session.login_id }}</li>
+    <li>이름: {{ session.user_name }}</li>
+</ul>
+
+<a href="{{ url_for('main.mypage') }}">정보 수정</a>
+{% endblock %}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}ASK{% endblock %}</title>
+</head>
+<body>
+
+    <!-- 상단 공통 영역 -->
+    {% if session.user_name %}
+        <div>
+            {{ session.user_name }} 님 |
+            <a href="{{ url_for('auth.logout') }}">로그아웃</a>
+            <a href="{{ url_for('main.mypage') }}">마이페이지</a>
+        </div>
+        <hr>
+    {% endif %}
+
+    <!-- 페이지별 내용 -->
+    {% block content %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}메인{% endblock %}
+
+{% block content %}
+<!-- 질문 입력 -->
+<h4>문제 질문</h4>
+
+<form method="post" action="{{ url_for('main.question') }}">
+
+    <!-- 학년 -->
+    <label>학년</label><br>
+    <select name="grade" required>
+        <option value="">선택</option>
+        <option value="중1">중1</option>
+        <option value="중2">중2</option>
+        <option value="중3">중3</option>
+        <option value="고1">고1</option>
+        <option value="고1">고2</option>
+        <option value="고1">고3</option>
+    </select>
+    <br><br>
+
+    <!-- 교재 -->
+    <label>교재</label><br>
+    <select name="book" required>
+        <option value="">선택</option>
+        <option value="개념원리">개념원리</option>
+        <option value="개념원리RPM">개념원리 RPM</option>
+        <option value="내신고쟁이">내신 고쟁이</option>
+    </select>
+    <br><br>
+
+    <!-- 문제 번호 -->
+    <label>문제 번호</label><br>
+    <input type="text" name="question_num" placeholder="예: 32번" required>
+    <br><br>
+
+    <button type="submit">전송</button>
+</form>
+{% endblock %}
