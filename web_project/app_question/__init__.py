@@ -40,9 +40,9 @@ def create_app():
     # 모델을 플라스크의 migrate 기능이 인식
     from . import models
 
-    # 앱 컨텍스트 안에서 테이블 생성
-    with app.app_context():
-        db.create_all()
+#     # 앱 컨텍스트 안에서 테이블 생성
+#     with app.app_context():
+#         db.create_all()
 
     # 블루프린트
     from .views import main_views, auth_views

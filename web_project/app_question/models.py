@@ -67,6 +67,20 @@ class User(db.Model):
         server_default=db.func.now()
     )
 
+    # 역할 (student / teacher / ...)
+    role = db.Column(
+        db.String(20), 
+        default="student", 
+        nullable=False
+    )
+
+    # 권한 레벨 (general / admin / ...)
+    auth_level = db.Column(
+        db.String(20), 
+        default="general", 
+        nullable=False
+    )    
+
     # 계정 활성 상태
     # 탈퇴 처리 시 실제 삭제 대신 비활성화 용도로 사용
     # True  : 정상 사용자
