@@ -4,8 +4,9 @@
 
 {% block content %}
 <h2>관리자 대시보드</h2>
-test
+기능 옵션
 <ul>
     <li><a href="{{ url_for('admin.user_list') }}">회원 관리</a></li>
+    <li><a href="{{ url_for('admin.question_list') }}">질문 목록 조회</a></li>
 </ul>
 {% endblock %}

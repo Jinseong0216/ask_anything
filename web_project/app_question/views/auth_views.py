@@ -35,7 +35,7 @@ def login():
 
         return "아이디 또는 비밀번호가 올바르지 않습니다."
 
-    return render_template("login.html")
+    return render_template("login/login.html")
 
 
 @bp.route("/register", methods=["GET", "POST"])
@@ -62,7 +62,7 @@ def register():
 
         return redirect(url_for("auth.login"))
 
-    return render_template("register.html")
+    return render_template("register/register.html")
 
 
 @bp.route("/logout")

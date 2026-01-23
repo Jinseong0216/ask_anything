@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}메인{% endblock %}
-
 {% block content %}
 <!-- 질문 입력 -->
 <h4>문제 질문</h4>
@@ -11,13 +9,13 @@
     <!-- 학년 -->
     <label>학년</label><br>
     <select name="grade" required>
-        <option value="">선택</option>
-        <option value="중1">중1</option>
-        <option value="중2">중2</option>
-        <option value="중3">중3</option>
-        <option value="고1">고1</option>
-        <option value="고1">고2</option>
-        <option value="고1">고3</option>
+        <option value="">학년</option>
+        {% for grade in ["중1", "중2", "중3", "고1", "고2", "고3"] %}
+            <option value="{{ grade }}"
+                {% if session.get("last_grade") == grade %}selected{% endif %}>
+                {{ grade }}
+            </option>
+        {% endfor %}
     </select>
     <br><br>
 
@@ -25,9 +23,12 @@
     <label>교재</label><br>
     <select name="book" required>
         <option value="">선택</option>
-        <option value="개념원리">개념원리</option>
-        <option value="개념원리RPM">개념원리 RPM</option>
-        <option value="내신고쟁이">내신 고쟁이</option>
+            {% for book in ["개념원리", "개념원리RPM", "내신고쟁이"] %}
+            <option value="{{ book }}"
+                {% if session.get("last_book") == book %}selected{% endif %}>
+                {{ book }}
+            </option>
+        {% endfor %}
     </select>
     <br><br>
 

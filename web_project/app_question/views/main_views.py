@@ -19,7 +19,7 @@ def home():
         print("질문 도착")
         print("문제 번호:", problem)
 
-    return render_template("index.html")
+    return render_template("main/index.html")
 
 
 @bp.route("/question", methods=["GET", "POST"])
@@ -44,9 +44,17 @@ def question():
         db.session.add(question)
         db.session.commit()
 
+        # 마지막 학생이 선택한 질문을 세션에 저장
+        session['last_grade'] = grade
+        session['last_book'] = book 
+
         return redirect(url_for("main.question"))
     
-    return render_template("index.html")
+    # GET 시, 세션값을전달
+    return render_template("main/index.html", 
+                           last_grade=session.get('last_grade'),
+                           last_book=session.get('lask_book')
+                           )
 
 
 @bp.route("/mypage", methods=["GET", "POST"])
@@ -57,5 +65,5 @@ def mypage():
         pass
         return 
     
-    return render_template("mypage.html")
+    return render_template("main/mypage/mypage.html")
 #    return render_template("mypage.html")
