@@ -37,12 +37,9 @@ def create_app():
     #   해당 객체를 앱에 등록할 때는 create_app 함수에서 init_app 함수를 통해 진행
     db.init_app(app)
     migrate.init_app(app, db)
+
     # 모델을 플라스크의 migrate 기능이 인식
     from . import models
-
-#     # 앱 컨텍스트 안에서 테이블 생성
-#     with app.app_context():
-#         db.create_all()
 
     # 블루프린트
     from .views import main_views, auth_views, admin_views
