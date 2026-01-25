@@ -1,10 +1,6 @@
-'''
-# context_processor
-
 # app_question/context.py
 from flask import session
 
-@app.context_processor
 def inject_globals():
     return {
         "current_user": {
@@ -16,4 +12,3 @@ def inject_globals():
         "is_login": "user_id" in session,
         "is_admin": session.get("auth_level") == "admin",
     }
-'''

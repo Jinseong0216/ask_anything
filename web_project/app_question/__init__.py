@@ -17,6 +17,7 @@ from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
+from .context import inject_globals
 from . import config
 
 db = SQLAlchemy()
@@ -37,6 +38,9 @@ def create_app():
     #   해당 객체를 앱에 등록할 때는 create_app 함수에서 init_app 함수를 통해 진행
     db.init_app(app)
     migrate.init_app(app, db)
+
+    # 전역변수 등록
+    app.context_processor(inject_globals)
 
     # 모델을 플라스크의 migrate 기능이 인식
     from . import models
