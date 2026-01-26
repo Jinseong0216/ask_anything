@@ -4,8 +4,8 @@
 <h3>마이페이지</h3>
 
 <ul>
-    <li>아이디: {{ session.login_id }}</li>
-    <li>이름: {{ session.user_name }}</li>
+    <li>아이디: {{ current_user.id }}</li>
+    <li>이름: {{ current_user.name }}</li>
 </ul>
 
 <a href="{{ url_for('main.mypage') }}">정보 수정</a>

@@ -11,14 +11,36 @@ flask --app app_question:create_app db upgrade
     모델의 변경 내용을 실제 데이터베이스에 적용할 때 사용 (위에서 생성된 작업파일을 실행하여 데이터베이스를 변경한다.)
 
 flask shell 실행: flask --app app_question:create_app shell
+
+로컬 호스팅: flask --app  app_question:create_app run --host=0.0.0.0 --port=5000
 '''
 
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
+
+# 보안관련
+from flask_jwt_extended import JWTManager
+from flask_bcrypt import Bcrypt
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_cors import CORS
+
+
 from .context import inject_globals
 from . import config
+
+# create_app 내부에서 생성하지 않고,
+# 전역에서 선언 후 init_app 패턴 사용
+# (Blueprint, model import 문제 방지)
+jwt = JWTManager()
+bcrypt = Bcrypt()
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"]
+)
+
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -27,10 +49,32 @@ def create_app():
     app = Flask(__name__)
 
     # 차후 수정 (키)
-    app.config["SECRET_KEY"] = "dev-secret-key-change-this"
+    app.config["SECRET_KEY"] = config.SECRET_KEY
+    app.config["JWT_SECRET_KEY"] = config.JWT_SECRET_KEY
+
+    # -------------------------
+    # JWT (Cookie 기반 인증)
+    # -------------------------
+    app.config.update(
+        JWT_TOKEN_LOCATION=["cookies"],
+
+        # Access Token
+        JWT_ACCESS_COOKIE_NAME="access_token",
+        JWT_ACCESS_COOKIE_PATH="/",
+
+        # Cookie security
+        JWT_COOKIE_SECURE=False,      # HTTPS 환경에서는 True
+        JWT_COOKIE_SAMESITE="Lax",    # Cross-site 필요 시 None + Secure
+
+        # CSRF protection
+        JWT_CSRF_IN_COOKIES=True,
+        JWT_CSRF_HEADER_NAME="X-CSRF-TOKEN",
+    )
+
 
     # config.py 파일에 작성한 항목을 읽기 위해 app.config.from_object(config) 코드를 추가
     app.config.from_object(config)
+
 
     # 전역 변수로 db, migrate 객체를 만든 다음 create_app 함수 안에서 init_app 메서드를 이용해 app에 등록
     # db 객체를 create_app 함수 안에서 생성하면 블루프린트와 같은 다른 모듈에서 사용할수 없기 때문에 db, 
@@ -39,6 +83,21 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
+    jwt.init_app(app)
+    bcrypt.init_app(app)
+    limiter.init_app(app)
+
+    # -------------------------
+    # CORS (Vue + Cookie)
+    # -------------------------
+    CORS(
+        app,
+        supports_credentials=True,
+        origins=[
+            "http://localhost:8080",
+        ],
+    )
+
     # 전역변수 등록
     app.context_processor(inject_globals)
 
@@ -46,8 +105,17 @@ def create_app():
     from . import models
 
     # 블루프린트
-    from .views import main_views, auth_views, admin_views
+    from .views import main_views, auth_views, admin_views, test_views, api_auth_views
     app.register_blueprint(main_views.bp)
     app.register_blueprint(auth_views.bp)
     app.register_blueprint(admin_views.bp)
+    app.register_blueprint(api_auth_views.bp)
+    app.register_blueprint(test_views.bp)
+
+
+    from .utils.auth import load_current_user
+    @app.before_request
+    def before_request():
+        load_current_user()    
+    
     return app

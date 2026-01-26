@@ -6,10 +6,6 @@ from app_question.utils.auth import login_required
 bp = Blueprint('main', __name__, url_prefix='/')
 
 
-@bp.route('/hello')
-def hello_pybo():
-    return 'Hello, Pybo!'
-
 @bp.route("/", methods=["GET", "POST"])
 @login_required
 def home():
@@ -66,4 +62,3 @@ def mypage():
         return 
     
     return render_template("main/mypage/mypage.html")
-#    return render_template("mypage.html")

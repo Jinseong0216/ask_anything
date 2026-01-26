@@ -1,7 +1,20 @@
 from functools import wraps
-from flask import session, redirect, url_for, abort
+from flask import g, session, redirect, url_for, abort
 
 from app_question.models import User
+
+def load_current_user():
+    """
+    요청마다 현재 로그인한 유저를 g에 저장
+
+    이제 g.current_user하면 user를 불러올 수 있음!
+    """
+    user_id = session.get("user_id")
+
+    if user_id is None:
+        g.current_user = None
+    else:
+        g.current_user = User.query.get(user_id)
 
 
 def login_required(view_func):
@@ -142,11 +155,12 @@ def login_required(view_func):
     """
     @wraps(view_func)
     def wrapped(*args, **kwargs):
-        user = get_current_user()
-        if not user:
+        user = g.current_user
+        if user is None:
             return redirect(url_for("auth.login"))
         return view_func(*args, **kwargs)
     return wrapped
+
 
 def admin_required(view_func):
     """
@@ -157,16 +171,10 @@ def admin_required(view_func):
     """
     @wraps(view_func)
     def wrapped(*args, **kwargs):
-        user = get_current_user()
+        user = g.current_user
 
         if user.auth_level != "admin":
             abort(403)
 
         return view_func(*args, **kwargs)
     return wrapped
-
-
-def get_current_user():
-    if "user_id" not in session:
-        return None
-    return User.query.get(session["user_id"])

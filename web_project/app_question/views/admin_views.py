@@ -27,7 +27,6 @@ def user_list():
 @login_required
 @admin_required
 def question_list():
-    if session.get("auth_level") != 'admin': abort(403)
 
     question_count_by_users = (
         db.session.query(

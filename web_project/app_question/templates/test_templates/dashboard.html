@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1d4ed8',
+            secondary: '#9333ea',
+            accent: '#f59e0b'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    .sidebar-link:hover {
+      @apply bg-primary text-white;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-500">
+
+  <!-- Sidebar -->
+  <div class="flex min-h-screen">
+    <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg p-6">
+      <h1 class="text-2xl font-bold text-primary mb-6">관리자 페이지</h1>
+      <nav class="flex flex-col gap-4">
+        <a href="#" class="sidebar-link px-4 py-2 rounded-lg font-medium">Dashboard</a>
+        <a href="#" class="sidebar-link px-4 py-2 rounded-lg font-medium">Sales</a>
+        <a href="#" class="sidebar-link px-4 py-2 rounded-lg font-medium">Customers</a>
+        <a href="#" class="sidebar-link px-4 py-2 rounded-lg font-medium">Reports</a>
+        <a href="#" class="sidebar-link px-4 py-2 rounded-lg font-medium">Settings</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 space-y-10">
+
+      <!-- Header -->
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-3xl font-bold">Dashboard</h2>
+          <p class="text-gray-500 dark:text-gray-400">Sales overview & insights</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <input type="text" placeholder="Search..." class="px-4 py-2 rounded-lg border dark:bg-gray-700">
+          <button onclick="document.documentElement.classList.toggle('dark')" class="bg-accent text-white px-4 py-2 rounded-lg shadow">Toggle Mode</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h3 class="text-sm text-gray-500 dark:text-gray-400">Total Questions</h3>
+          <p class="text-2xl font-bold mt-2">154,300</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h3 class="text-sm text-gray-500 dark:text-gray-400">Today Questions</h3>
+          <p class="text-2xl font-bold mt-2">1,203</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h3 class="text-sm text-gray-500 dark:text-gray-400">Visits</h3>
+          <p class="text-2xl font-bold mt-2">317</p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h3 class="text-sm text-gray-500 dark:text-gray-400">Incompletes</h3>
+          <p class="text-2xl font-bold mt-2">45</p>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h3 class="text-lg font-semibold mb-4">Trend</h3>
+          <canvas id="salesChart"></canvas>
+        </div>
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+          <h3 class="text-lg font-semibold mb-4">Visitor Growth</h3>
+          <canvas id="customersChart"></canvas>
+        </div>
+      </div>
+
+      <!-- User Profile -->
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+        <h3 class="text-lg font-semibold mb-4">Admin Profile</h3>
+        <div class="flex items-center gap-6">
+          <img src="https://i.pravatar.cc/100?img=3" alt="User" class="w-20 h-20 rounded-full">
+          <div>
+            <h4 class="text-xl font-bold">Alex Jordan</h4>
+            <p class="text-gray-500 dark:text-gray-400">Senior Analyst</p>
+            <button class="mt-2 px-4 py-2 bg-primary text-white rounded-lg">Edit Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Sales Table -->
+      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+        <h3 class="text-lg font-semibold mb-4">Recent Sales</h3>
+        <table class="w-full text-left">
+          <thead>
+            <tr>
+              <th class="py-2">Customer</th>
+              <th class="py-2">Product</th>
+              <th class="py-2">Amount</th>
+              <th class="py-2">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="py-2">Jane Smith</td>
+              <td class="py-2">Consulting Plan</td>
+              <td class="py-2">$5,000</td>
+              <td class="py-2">Apr 10</td>
+            </tr>
+            <tr>
+              <td class="py-2">Michael Rose</td>
+              <td class="py-2">CRM Package</td>
+              <td class="py-2">$3,500</td>
+              <td class="py-2">Apr 11</td>
+            </tr>
+            <tr>
+              <td class="py-2">Sarah Lee</td>
+              <td class="py-2">Analytics</td>
+              <td class="py-2">$2,800</td>
+              <td class="py-2">Apr 12</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    new Chart(salesCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+        datasets: [{
+          label: 'Sales',
+          data: [12000, 15000, 18000, 20000],
+          backgroundColor: 'rgba(59, 130, 246, 0.2)',
+          borderColor: '#3b82f6',
+          borderWidth: 2
+        }]
+      }
+    });
+
+    const customersCtx = document.getElementById('customersChart').getContext('2d');
+    new Chart(customersCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+        datasets: [{
+          label: 'New Customers',
+          data: [300, 400, 450, 500],
+          backgroundColor: '#9333ea'
+        }]
+      }
+    });
+  </script>
+</body>
+</html>
