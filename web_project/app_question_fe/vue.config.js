@@ -1,6 +1,9 @@
 
 const { defineConfig } = require('@vue/cli-service')
 
+const fs = require("fs")
+const path = require("path")
+
 module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
@@ -8,13 +11,19 @@ module.exports = defineConfig({
     host: '0.0.0.0',
     // Vue 개발 서버 포트
     port: 8080,
+    // https
+    https: {
+      key: fs.readFileSync(path.resolve(__dirname, "../cert/localhost-key.pem")),
+      cert: fs.readFileSync(path.resolve(__dirname, "../cert/localhost.pem"))
+    },
     proxy: {
       '/api': {
         // Flask API 서버 주소
-        target: 'http://localhost:5000',
-
+        target: 'https://localhost:5000',
         // 호스트 헤더를 대상 서버 기준으로 변경
-        changeOrigin: true
+        changeOrigin: true,
+        // self-signed 인증서 허용
+        secure: false,
       }
     }
 },

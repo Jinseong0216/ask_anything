@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from app_question.models import Question
 from app_question import db
-from app_question.utils.auth import login_required
 
 bp = Blueprint('test', __name__, url_prefix='/test')
 

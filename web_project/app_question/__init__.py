@@ -15,7 +15,7 @@ flask shell 실행: flask --app app_question:create_app shell
 로컬 호스팅: flask --app  app_question:create_app run --host=0.0.0.0 --port=5000
 '''
 
-from flask import Flask
+from flask import Flask, jsonify
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
@@ -26,7 +26,9 @@ from flask_bcrypt import Bcrypt
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_cors import CORS
-
+from flask_jwt_extended import JWTManager, verify_jwt_in_request
+from werkzeug.exceptions import Unauthorized
+from datetime import timedelta
 
 from .context import inject_globals
 from . import config
@@ -40,6 +42,12 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["200 per day", "50 per hour"]
 )
+
+CSRF_EXEMPT_PATHS = {
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/auth/logout",
+}
 
 
 db = SQLAlchemy()
@@ -58,17 +66,25 @@ def create_app():
     app.config.update(
         JWT_TOKEN_LOCATION=["cookies"],
 
+        # 만료시간
+        JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=1),
+        JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30),
+
         # Access Token
-        JWT_ACCESS_COOKIE_NAME="access_token",
-        JWT_ACCESS_COOKIE_PATH="/",
+        JWT_ACCESS_COOKIE_NAME = "access_token",
+        JWT_ACCESS_COOKIE_PATH = "/",
+        JWT_REFRESH_COOKIE_NAME = "refresh_token",
+        JWT_REFRESH_COOKIE_PATH = "/",
 
         # Cookie security
-        JWT_COOKIE_SECURE=False,      # HTTPS 환경에서는 True
-        JWT_COOKIE_SAMESITE="Lax",    # Cross-site 필요 시 None + Secure
+        JWT_COOKIE_SECURE = True,      # HTTPS 환경에서는 True
+        JWT_COOKIE_HTTPONLY = True,
+        JWT_COOKIE_SAMESITE = "Lax",    # Cross-site 필요 시 None + Secure
 
         # CSRF protection
-        JWT_CSRF_IN_COOKIES=True,
-        JWT_CSRF_HEADER_NAME="X-CSRF-TOKEN",
+        JWT_CSRF_IN_COOKIES = False,
+        # JWT_CSRF_HEADER_NAME = "X-CSRF-TOKEN",
+        JWT_COOKIE_CSRF_PROTECT = False     # CSRF 보호 끔 (개발용)
     )
 
 
@@ -93,9 +109,9 @@ def create_app():
     CORS(
         app,
         supports_credentials=True,
-        origins=[
-            "http://localhost:8080",
-        ],
+        resources={
+            r"/api/*": {"origins": "https://localhost:8080"}
+        },
     )
 
     # 전역변수 등록
@@ -105,17 +121,47 @@ def create_app():
     from . import models
 
     # 블루프린트
-    from .views import main_views, auth_views, admin_views, test_views, api_auth_views
-    app.register_blueprint(main_views.bp)
-    app.register_blueprint(auth_views.bp)
-    app.register_blueprint(admin_views.bp)
+    from .views import test_views, api_auth_views
     app.register_blueprint(api_auth_views.bp)
     app.register_blueprint(test_views.bp)
 
+    from flask import request, abort
 
-    from .utils.auth import load_current_user
+    # CSRF Middleware (Double Submit)
     @app.before_request
-    def before_request():
-        load_current_user()    
-    
+    def csrf_protect():
+        
+        # CSRF 예외
+        if request.path in CSRF_EXEMPT_PATHS:
+            return
+        
+        # GET / OPTIONS / HEAD 제외
+        if request.method not in ("POST", "PUT", "PATCH", "DELETE"):
+            return
+        
+        # JWT 먼저 검증
+        try:
+            verify_jwt_in_request()
+
+        except Unauthorized:
+            return jsonify({"msg": "Unauthorized"}), 401
+
+        # CSRF 토큰 비교
+        csrf_cookie = request.cookies.get("csrf_token")
+        csrf_header = request.headers.get("X-CSRF-TOKEN")
+
+        print('csrf_cookie', csrf_cookie)
+        print('csrf_header', csrf_header)
+
+        if not csrf_cookie or not csrf_header:
+            print('No CSRF TOKEN \n\n\n')
+            return jsonify({"msg": "CSRF token missing"}), 403
+
+        if csrf_cookie != csrf_header:
+            print('No CSRF TOKEN HEADER \n\n\n')
+            return jsonify({"msg": "Invalid CSRF token"}), 403
+        print('Valid CSRF TOKEN \n\n\n')
+
     return app
+
+# flask --app app_question run  --port=5000  --cert=cert/localhost.pem  --key=cert/localhost-key.pem

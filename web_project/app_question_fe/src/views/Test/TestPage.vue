@@ -1,13 +1,6 @@
 <template>
-  <div class="
-              min-h-screen flex items-center justify-center 
-              bg-gray-50 px-4
-              sm:px-6 lg:px-8
-              ">
-    <div class="
-                w-full max-w-md bg-white p-6 
-                sm:p-8
-                rounded-lg shadow-md">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
       
       <!-- 제목 -->
       <h2 class="text-2xl font-bold mb-6 text-center">회원가입</h2>
@@ -18,35 +11,35 @@
           v-model.trim="form.login_id"
           type="text"
           placeholder="아이디"
-          class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
         <input
           v-model.trim="form.user_name"
           type="text"
           placeholder="이름"
-          class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
         <input
           v-model.trim="form.email"
           type="email"
           placeholder="이메일"
-          class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
         <input
           v-model.trim="form.password"
           type="password"
           placeholder="비밀번호"
-          class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
         <input
           v-model.trim="form.passwordConfirm"
           type="password"
           placeholder="비밀번호 확인"
-          class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          class="px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
         <button
@@ -68,7 +61,7 @@
       </p>
 
       <!-- 소셜 회원가입 -->
-      <div class="mt-6 flex flex-wrap justify-center gap-3">
+      <div class="mt-6 flex justify-center gap-3">
         <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center border hover:bg-gray-100">G</button>
         <button class="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center border hover:bg-yellow-500">K</button>
         <button class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center border hover:bg-green-600">N</button>
