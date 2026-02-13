@@ -23,7 +23,7 @@ import secrets
 from app_question.models import RefreshToken
 from app_question.utils.auth import generate_tokens, store_refresh_token
 
-from app_question.utils.auth import role_required
+from app_question.utils.auth import auth_required
 
 bp = Blueprint('api_auth', __name__, url_prefix='/api/auth')
 
@@ -201,25 +201,57 @@ def refresh():
 
     # 새 토큰 발급
     access_token, refresh_token = generate_tokens(user)
-    store_refresh_token(refresh, user.user_id)
+    store_refresh_token(refresh_token, user.user_id)
 
     response = jsonify({"msg": "refreshed"})
     set_access_cookies(response, access_token)
     set_refresh_cookies(response, refresh_token)
-
-    # user = User.query.get(user_id)
-    # if not user or not user.is_active:
-    #     return jsonify(msg="invalid user"), 403
-
-    # access_token = create_access_token(identity=str(user.user_id))
-    # res = jsonify(msg="refreshed")
-    # set_access_cookies(res, access_token)
     return response
+
+
+@bp.get("/users")
+@auth_required("admin")
+def get_users():
+    users = User.query.all()
+
+    result = []
+    for u in users:
+        result.append({
+            "user_id": u.user_id,
+            "login_id": u.login_id,
+            "user_name": u.user_name,
+            "email": u.email,
+            "role": u.role,
+            "auth_level": u.auth_level,
+            "is_active": u.is_active,
+            "created_at": u.created_at.isoformat()
+        })
+
+    return jsonify(result)
+
+
+@bp.put("/users/<int:user_id>")
+@auth_required("admin")
+def update_user(user_id):
+    print(user_id)
+    data = request.get_json()
+
+    user = User.query.get_or_404(user_id)
+
+    user.user_name = data.get("user_name", user.user_name)
+    user.email = data.get("email", user.email)
+    user.role = data.get("role", user.role)
+    user.auth_level = data.get("auth_level", user.auth_level)
+    user.is_active = data.get("is_active", user.is_active)
+
+    db.session.commit()
+
+    return jsonify({"msg": "updated"})
 
 
 # 권한확인 api
 @bp.get("/check_admin")
 @jwt_required()
-@role_required("admin")
+@auth_required("admin")
 def admin_only():
     return jsonify({"msg": "admin access granted"})

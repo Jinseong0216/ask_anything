@@ -7,6 +7,9 @@ import LogIn from '@/views/LogIn.vue'
 import RegisterPage from '@/views/RegisterPage.vue'
 import Admin from '@/views/AdminPage.vue'
 
+// Admin
+import AdminUser from '@/views/AdminUser.vue'
+
 // Test
 import TestHome from '@/views/Test/TestHome.vue'
 import TestPage from '@/views/Test/TestPage.vue'
@@ -34,7 +37,14 @@ const routes = [
     path: '/admin', 
     name: 'admin',
     component: Admin,
-    meta: { requiresAuth: true, role: 'student'}
+    meta: { requiresAuth: true }
+  },
+
+  { 
+    path: '/admin/users', 
+    name: 'adminUser',
+    component: AdminUser,
+    meta: { requiresAuth: true }
   },
 
   { 
@@ -42,9 +52,8 @@ const routes = [
     name: 'testHome',
     component: TestHome,
     meta: { 
-      requiresAuth: true, 
+      requiresAuth: false, 
       requiresAdumin: false,
-      role: 'student',
     }
    },
 
@@ -78,6 +87,7 @@ router.beforeEach(async (to) => {
       return true
     }
     console.log('최초 진입 fetch호출 - 시간', Date().toLocaleString())
+    auth.initialized = true
     await auth.fetchMe()
   }
 

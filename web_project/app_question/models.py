@@ -74,7 +74,110 @@ class User(db.Model):
         login_id와 user_id를 함께 표시한다.
         """
         return f"<User user_id={self.user_id}, login_id={self.login_id}>"
+    
 
+# -----------------------------
+# Lecture (정규반 개념)
+# -----------------------------
+class Lecture(db.Model):
+    __tablename__ = "lectures"
+
+    lecture_id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(100), nullable=False)
+    invite_code = db.Column(db.String(20), unique=True, nullable=False)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+
+    # 공동 강사 관계
+    teachers = db.relationship(
+        "User",
+        secondary="lecture_teachers",
+        backref="teaching_lectures"
+    )
+
+    # 학생 관계
+    students = db.relationship(
+        "User",
+        secondary="lecture_students",
+        backref="enrolled_lectures"
+    )
+
+
+# -----------------------------
+# LectureTeacher (공동 강사용 중간 테이블)
+# -----------------------------
+class LectureTeacher(db.Model):
+    __tablename__ = "lecture_teachers"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    lecture_id = db.Column(
+        db.Integer,
+        db.ForeignKey("lectures.lecture_id"),
+        nullable=False
+    )
+
+    teacher_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.user_id"),
+        nullable=False
+    )
+
+    # main / assistant 확장 가능
+    role = db.Column(db.String(20), default="main")
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint("lecture_id", "teacher_id"),
+    )
+
+
+# -----------------------------
+# LectureStudent (수강생 연결)
+# -----------------------------
+class LectureStudent(db.Model):
+    __tablename__ = "lecture_students"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    lecture_id = db.Column(
+        db.Integer,
+        db.ForeignKey("lectures.lecture_id"),
+        nullable=False
+    )
+
+    student_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.user_id"),
+        nullable=False
+    )
+
+    joined_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint("lecture_id", "student_id"),
+    )
+
+
+# -----------------------------
+# Question
+# -----------------------------
 class Question(db.Model):
     __tablename__ = "questions"
 

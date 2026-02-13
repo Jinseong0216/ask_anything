@@ -40,7 +40,7 @@ jwt = JWTManager()
 bcrypt = Bcrypt()
 limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
+    default_limits=["4000 per day", "1000 per hour"]
 )
 
 CSRF_EXEMPT_PATHS = {
@@ -110,7 +110,11 @@ def create_app():
         app,
         supports_credentials=True,
         resources={
-            r"/api/*": {"origins": "https://localhost:8080"}
+            r"/api/*": {"origins": 
+                        [
+                        "https://localhost:8080",
+                        ]
+                        }
         },
     )
 
@@ -121,8 +125,9 @@ def create_app():
     from . import models
 
     # 블루프린트
-    from .views import test_views, api_auth_views
+    from .views import test_views, api_auth_views, api_lecture_views
     app.register_blueprint(api_auth_views.bp)
+    app.register_blueprint(api_lecture_views.bp)
     app.register_blueprint(test_views.bp)
 
     from flask import request, abort

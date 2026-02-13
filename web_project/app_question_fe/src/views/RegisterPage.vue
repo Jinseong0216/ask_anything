@@ -68,10 +68,28 @@
       </p>
 
       <!-- 소셜 회원가입 -->
-      <div class="mt-6 flex flex-wrap justify-center gap-3">
-        <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center border hover:bg-gray-100">G</button>
-        <button class="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center border hover:bg-yellow-500">K</button>
-        <button class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center border hover:bg-green-600">N</button>
+      <div class="flex justify-center gap-3 mt-6">
+
+        <!-- Google -->
+        <button class="social-btn bg-white hover:bg-neutral-50" aria-label="Google 로그인">
+          <img :src="googleIcon" class="w-5 h-5" />
+        </button>
+
+        <!-- Kakao -->
+        <button class="social-btn bg-[#FEE500] hover:brightness-95" aria-label="Kakao 로그인">
+          <img :src="kakaoIcon" class="w-5 h-5" />
+        </button>
+
+        <!-- Naver -->
+        <button class="social-btn bg-[#03C75A] hover:brightness-95" aria-label="Naver 로그인">
+          <img :src="naverIcon" class="w-6 h-6" />
+        </button>
+
+        <!-- Apple -->
+        <button class="social-btn bg-black hover:bg-neutral-900" aria-label="Apple 로그인">
+          <img :src="appleIcon" class="w-5 h-5 invert" />
+        </button>
+
       </div>
       
     </div>
@@ -82,6 +100,11 @@
 import { reactive, computed } from "vue"
 import { useAuthStore } from "@/store/auth"
 import { useRouter } from "vue-router"
+
+import googleIcon from "@/assets/social_icons/google.svg"
+import kakaoIcon from "@/assets/social_icons/kakao.svg"
+import naverIcon from "@/assets/social_icons/naver.svg"
+import appleIcon from "@/assets/social_icons/apple.svg"
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -138,6 +161,9 @@ const handleSignUp = async () => {
 }
 </script>
 
-<style>
-/* 필요 시 추가 커스텀 스타일 */
+<style scoped>
+.social-btn {
+  @apply w-11 h-11 rounded-full flex items-center justify-center
+         border border-black/10 transition-all;
+}
 </style>

@@ -1,122 +1,131 @@
 <template>
-  <!-- 상단 고정 네비게이션 바
-       - 높이를 h-12로 고정해서 툴 느낌 유지
-       - 배경은 완전 흰색
-       - 하단 경계선만 살짝 줘서 영역 구분 -->
   <header
-    class="
-           h-12 flex items-center gap-2 px-3
-           bg-white border-b border-zinc-200
-           text-zinc-600 text-sm"
+    class="h-14 flex items-center px-4 bg-white border-b border-zinc-200 relative"
   >
-
-    <!-- 좌측 로고 영역
-         - 다른 요소들과 시각적으로 분리하기 위해 오른쪽에 border
-         - 로고만 들어가므로 높이 작게 유지 -->
-    <div class="flex items-center gap-2 pr-3 border-r border-zinc-200">
-      <img src="/logo.png" class="h-5" />
+    <!-- 로고 -->
+    <div class="flex items-center gap-2 pr-4 border-r border-zinc-200">
+      <router-link to="/"><img :src="logo" alt="Qube" class="h-8" /></router-link>
     </div>
 
-    <!-- 학원명 + 포인트 표시 영역
-         - 글자 크기를 줄여서 네비가 튀지 않게 함
-         - 포인트 숫자만 강조 -->
-    <div class="flex items-center gap-1 text-xs">
-      <!-- 유저 이름 -->
-      <span class="font-semibold text-zinc-900">
-        <!-- {{ auth.user.user_name }} -->
-      </span>
-      
-      <!-- 유저 상태 -->
-      <span class="font-semibold text-blue-600">
-        <!-- {{ auth.user?.role === 'student' ? '학생회원' : '선생님' }} -->
-      </span>
-
-      <span class="text-zinc-400">|</span>
-      <span class="text-zinc-500">
-        <b class="text-zinc-900">8,750</b> P
-      </span>
-    </div>
-
-    <!-- 메인 네비 버튼 영역
-         - 실제 페이지 이동용 버튼들
-         - ml-4로 좌측 정보 영역과 거리 확보 -->
-    <nav class="flex items-center gap-1 ml-4">
-      <NavBtn label="시험지" />
-      <NavBtn label="학생관리" />
-      <NavBtn label="문제DB" />
-      <NavBtn label="서점" />
+    <!-- 데스크탑 메뉴 -->
+    <nav class="hidden md:flex items-center gap-2 ml-6">
+      <NavBtn to="/" label="대시보드" />
+      <NavBtn to="/" label="시간표" />
+      <NavBtn to="/" label="숙제" />
+      <NavBtn to="/" label="질문함" />
+      <NavBtn to="/" label="자료실" />
     </nav>
 
-    <!-- 가운데 공간 확보용
-         - 좌측 요소들과 우측 아이콘을 양 끝으로 밀어냄 -->
     <div class="flex-1" />
 
-    <!-- 우측 아이콘 영역
-         - 자주 누르는 기능만 배치
-         - 버튼 크기 통일 -->
-    <div class="flex items-center gap-1">
-      <IconBtn icon="⟳" />
-      <IconBtn icon="☰" />
+    <!-- 우측 아이콘 영역 -->
+    <div class="flex items-center gap-2">
+      <!-- 이름 + 역할 배지 (데스크탑에서만 표시) -->
+      <div
+        class="hidden md:flex items-center gap-2 px-3 py-1 bg-zinc-50 rounded-full border border-zinc-200"
+      >
+        <span class="font-semibold text-zinc-900">{{ auth.user.user_name }}</span>
+        <span
+          class="text-xs px-2 py-0.5 rounded-full font-medium"
+          :class="{
+            'bg-blue-100 text-blue-800': auth.user.role === 'student',
+            'bg-green-100 text-green-800': auth.user.role === 'teacher'
+          }"
+        >
+          {{ auth.user.role === 'student' ? '학생' : '선생' }}
+        </span>
+      </div>
 
-      <!-- 사용자 프로필 버튼
-           - 원형으로 처리해서 다른 아이콘과 구분 -->
+      <!-- 전체 메뉴 버튼 (모바일 + 데스크탑 공통) -->
       <button
-        class="w-7 h-7 rounded-full
-               flex items-center justify-center
-               hover:bg-zinc-100 transition"
+        @click="toggleMenu"
+        class="w-9 h-9 flex items-center justify-center rounded hover:bg-zinc-100 transition"
+      >
+        ☰
+      </button>
+
+      <!-- 마이페이지 버튼 -->
+      <router-link
+        to=""
+        class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-zinc-100 transition"
       >
         👤
-      </button>
+      </router-link>
     </div>
 
+    <!-- 사이드 전체 메뉴 (Drawer) -->
+    <transition name="slide">
+      <div
+        v-if="menuOpen"
+        class="fixed top-0 right-0 w-64 h-full bg-white shadow-lg border-l border-zinc-200 z-50 p-6 flex flex-col"
+      >
+        <!-- 헤더 -->
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="font-semibold text-lg">전체 메뉴</h2>
+          <button @click="toggleMenu" class="text-zinc-500 hover:text-zinc-900">✕</button>
+        </div>
+
+        <!-- 메뉴 링크 -->
+        <div class="flex-1 flex flex-col gap-4 text-sm">
+          <router-link @click="toggleMenu" to="/">대시보드</router-link>
+          <router-link @click="toggleMenu" to="/">시간표</router-link>
+          <router-link @click="toggleMenu" to="/">숙제</router-link>
+          <router-link @click="toggleMenu" to="/">질문함</router-link>
+          <router-link @click="toggleMenu" to="/">자료실</router-link>
+          <router-link @click="toggleMenu" to="/">마이페이지</router-link>
+        </div>
+
+        <!-- 로그아웃 버튼 (맨 아래 고정) -->
+        <button
+          @click="logout"
+          class="mt-4 px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100 rounded transition text-left w-full"
+        >
+          로그아웃
+        </button>
+      </div>
+    </transition>
+
+
+    <!-- 어두운 배경 -->
+    <div
+      v-if="menuOpen"
+      @click="toggleMenu"
+      class="fixed inset-0 bg-black/30 z-40"
+    />
   </header>
 </template>
 
 <script setup>
-    import { useAuthStore } from '@/store/auth.js'
+import NavBtn from "@/components/NavBtn.vue"
+import { ref } from "vue"
+import { useAuthStore } from "@/store/auth.js"
+import logo from "@/assets/neoMath.png"
 
-    const auth = useAuthStore()
 
-    /*
-    NavBtn
-    - 상단 네비에 사용하는 텍스트 버튼 전용 컴포넌트
-    - 높이와 패딩을 고정해서 버튼마다 크기 차이 없게 처리
-    - 글자 수가 달라도 줄바꿈되지 않도록 whitespace-nowrap 사용
-    */
-    const NavBtn = {
-    props: {
-        label: String, // 버튼에 표시할 텍스트
-    },
-    template: `
-        <button
-        class="px-2 h-7 text-xs font-medium
-                text-zinc-600 hover:text-zinc-900
-                hover:bg-zinc-100 rounded transition whitespace-nowrap"
-        >
-        {{ label }}
-        </button>
-    `,
-    }
+const auth = useAuthStore()
+const logout = async () => {
+  await auth.logout()
+}
 
-    /*
-    IconBtn
-    - 아이콘 하나만 표시하는 버튼
-    - 알림, 메뉴, 설정 같은 보조 기능용
-    - 클릭 영역을 확보하면서도 네비 높이를 깨지 않게 설계
-    */
-    const IconBtn = {
-    props: {
-        icon: String, // 버튼 안에 표시할 아이콘 문자
-    },
-    template: `
-        <button
-        class="w-7 h-7 flex items-center justify-center
-                text-zinc-500 hover:text-zinc-900
-                hover:bg-zinc-100 rounded transition"
-        >
-        {{ icon }}
-        </button>
-    `,
-    }
-    auth
+const menuOpen = ref(false)
+
+const toggleMenu = () => {
+  menuOpen.value = !menuOpen.value
+}
+
 </script>
+
+<style>
+.slide-enter-from {
+  transform: translateX(100%);
+}
+.slide-enter-active {
+  transition: transform 0.2s ease;
+}
+.slide-leave-to {
+  transform: translateX(100%);
+}
+.slide-leave-active {
+  transition: transform 0.2s ease;
+}
+</style>

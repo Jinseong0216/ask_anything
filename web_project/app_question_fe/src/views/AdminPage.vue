@@ -2,10 +2,10 @@
   <div class="flex min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-500">
     <!-- Sidebar -->
     <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg p-6">
-      <h1 class="text-2xl font-bold text-primary mb-6">ZappyDash</h1>
+      <h1 class="text-2xl font-bold text-primary mb-6">관리자 Dashboard</h1>
       <nav class="flex flex-col gap-4">
         <a href="#" class="px-4 py-2 rounded-lg font-medium hover:bg-primary hover:text-white">Dashboard</a>
-        <a href="#" class="px-4 py-2 rounded-lg font-medium hover:bg-primary hover:text-white">Sales</a>
+        <router-link to="/admin/users" class="px-4 py-2 rounded-lg font-medium hover:bg-primary hover:text-white">회원관리</router-link>
         <a href="#" class="px-4 py-2 rounded-lg font-medium hover:bg-primary hover:text-white">Customers</a>
         <a href="#" class="px-4 py-2 rounded-lg font-medium hover:bg-primary hover:text-white">Reports</a>
         <a href="#" class="px-4 py-2 rounded-lg font-medium hover:bg-primary hover:text-white">Settings</a>

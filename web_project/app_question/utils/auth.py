@@ -27,12 +27,17 @@ def generate_tokens(user):
     access_token = create_access_token(
         identity=str(user.user_id),
         additional_claims={
+            "auth_level": user.auth_level,
             "role": user.role
         }
     )
 
     refresh_token = create_refresh_token(
-        identity=str(user.user_id)
+        identity=str(user.user_id),
+        additional_claims={
+            "auth_level": user.auth_level,
+            "role": user.role
+        }
     )
 
     return access_token, refresh_token
@@ -56,20 +61,18 @@ def store_refresh_token(token, user_id):
     db.session.commit()
 
 # 권한 관련
-ROLE_LEVEL = {
-    "student": 1,
-    "teacher": 2,
-    "admin": 3,
+Auth_LEVEL = {
+    "general": 1,
+    "admin": 2,
 }
-def role_required(min_role):
+def auth_required(min_auth):
     def wrapper(view_func):
         @wraps(view_func)
         def decorated(*args, **kwargs):
             verify_jwt_in_request()
-
-            role = get_jwt().get("role")
-
-            if ROLE_LEVEL.get(role, 0) < ROLE_LEVEL[min_role]:
+            auth = get_jwt().get("auth_level")
+            print('권한레벨 확인', auth)
+            if Auth_LEVEL.get(auth, 0) < Auth_LEVEL[min_auth]:
                 abort(403)
 
             return view_func(*args, **kwargs)

@@ -14,12 +14,14 @@
   페이지 전환은 router-view에서 처리
 */
 
-import { onMounted, computed } from "vue"
+import { computed } from "vue"
 import { useRoute } from "vue-router"
 import { useAuthStore } from "@/store/auth"
 import NavBar from "@/components/NavBar.vue"
 
 const auth = useAuthStore()
+auth
+
 const route = useRoute()
 
 // 로그인/회원가입 페이지에서 네비바 숨기기
@@ -27,9 +29,6 @@ const showNavBar = computed(() => {
   return !["/login", "/register", "/test"].includes(route.path)
 })
 
-onMounted(() => {
-  auth.bindEvents()
-})
 </script>
 
 <style>

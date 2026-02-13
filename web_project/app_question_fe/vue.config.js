@@ -25,6 +25,14 @@ module.exports = defineConfig({
         // self-signed 인증서 허용
         secure: false,
       }
-    }
-},
+    },
+
+    // 웹소켓 연결에러때문에 잠시 false 해놓은 것
+    hot: false,
+    liveReload: false,
+    client: {
+      overlay: false,
+      webSocketURL: 'auto://0.0.0.0:0/ws',
+    },
+  },
 })

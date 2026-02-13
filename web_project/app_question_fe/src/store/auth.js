@@ -53,7 +53,6 @@ export const useAuthStore = defineStore("auth", () => {
   const forceLogout = async (payload) => {
     console.log("강제 로그아웃 사유:", payload?.reason)
     user.value =''
-    initialized.value = true
     if (router.currentRoute.value.name !== 'login') {
       router.replace({ name: "login" })
     }
@@ -88,7 +87,6 @@ export const useAuthStore = defineStore("auth", () => {
   const logout = async () => {
     const res = await authApi.logout()
     user.value = ''
-    initialized.value = false
     console.log('로그아웃요청 들어감 res', res)
     console.log('로그아웃요청 들어감 res.data', res.data)
     router.push({ name: "login"})
@@ -111,14 +109,14 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  const bindEvents = () => {
-    authEvents.on("force-logout", forceLogout)
-  }
+  authEvents.on("force-logout", forceLogout)
+  // const bindEvents = () => {
+  //   authEvents.on("force-logout", forceLogout)
+  // }
 
   return {
     user, loading, error, isAuthenticated, initialized,
     fetchMe, register, login, logout, refreshToken, forceLogout,
-    bindEvents,
   }
 })
 
