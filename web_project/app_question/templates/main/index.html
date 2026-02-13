@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- 질문 입력 -->
+<h4>문제 질문</h4>
+
+<form method="post" action="{{ url_for('main.question') }}">
+
+    <!-- 학년 -->
+    <label>학년</label><br>
+    <select name="grade" required>
+        <option value="">학년</option>
+        {% for grade in ["중1", "중2", "중3", "고1", "고2", "고3"] %}
+            <option value="{{ grade }}"
+                {% if session.get("last_grade") == grade %}selected{% endif %}>
+                {{ grade }}
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <!-- 교재 -->
+    <label>교재</label><br>
+    <select name="book" required>
+        <option value="">선택</option>
+            {% for book in ["개념원리", "개념원리RPM", "내신고쟁이"] %}
+            <option value="{{ book }}"
+                {% if session.get("last_book") == book %}selected{% endif %}>
+                {{ book }}
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <!-- 문제 번호 -->
+    <label>문제 번호</label><br>
+    <input type="text" name="question_num" placeholder="예: 32번" required autofocus>
+    <br><br>
+
+    <button type="submit">전송</button>
+</form>
+{% endblock %}
